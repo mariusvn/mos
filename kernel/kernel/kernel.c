@@ -4,14 +4,16 @@
 #include <kernel/consts.h>
 #include <drivers/keyboard.h>
 #include <drivers/cursor.h>
+#include <string.h>
 
 void kernel_main(void) {
 	terminal_initialize();
 	printf("MOS v%s\nCreated by %s\n", VERSION, AUTHOR);
-	terminal_updatecursorpos();
-	while (1) {
-		char c = getchar();
-		printf("%c", c);
+	while(1) {
+		printf(">");
 		terminal_updatecursorpos();
+		char *a = read_line();
+		if (strlen(a) != 0)
+			printf("%s\n", a);
 	}
 }
