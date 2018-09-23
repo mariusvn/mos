@@ -4,11 +4,12 @@
 #include <string.h>
 
 #include <kernel/tty.h>
+#include <drivers/cursor.h>
 
 #include "vga.h"
 
-static const size_t VGA_WIDTH = 80;
-static const size_t VGA_HEIGHT = 25;
+//static const size_t VGA_WIDTH = 80;
+//static const size_t VGA_HEIGHT = 25;
 static uint16_t* const VGA_MEMORY = (uint16_t*) 0xB8000;
 
 static size_t terminal_row;
@@ -29,6 +30,15 @@ void terminal_initialize(void) {
 	}
 }
 
+void terminal_scroll(void)
+{
+	for (size_t i = 0; i < VGA_HEIGHT; i++) {
+		for (size_t j = 0; j < VGA_WIDTH; j++) {
+			terminal_buffer[i * VGA_WIDTH + j] = terminal_buffer[(i + 1) * VGA_WIDTH + j];
+		}
+	}
+}
+
 void terminal_setcolor(uint8_t color) {
 	terminal_color = color;
 }
@@ -40,17 +50,28 @@ void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
 
 void terminal_putchar(char c) {
 	unsigned char uc = c;
-	terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
-	if (++terminal_column == VGA_WIDTH) {
+	if (uc != '\n' && uc != '\b')
+		terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
+	if (uc == '\b') {
+		terminal_buffer[(terminal_row * VGA_WIDTH + terminal_column) - 1] = vga_entry(' ', terminal_color);
+		if (terminal_column != 0)
+			terminal_column--;
+		return;
+	}
+	if (++terminal_column == VGA_WIDTH || uc == '\n') {
 		terminal_column = 0;
 		if (++terminal_row == VGA_HEIGHT)
-			terminal_row = 0;
+			terminal_scroll();
 	}
 }
 
 void terminal_write(const char* data, size_t size) {
 	for (size_t i = 0; i < size; i++)
 		terminal_putchar(data[i]);
+}
+
+void terminal_updatecursorpos() {
+	update_cursor(terminal_column, terminal_row);
 }
 
 void terminal_writestring(const char* data) {
