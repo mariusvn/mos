@@ -13,7 +13,9 @@ void kernel_main(void) {
 		printf(">");
 		terminal_updatecursorpos();
 		char *a = read_line();
-		if (strlen(a) != 0)
-			printf("%s\n", a);
+		if (strlen(a) != 0) {
+			char **res = split(a, ' ');
+			printf(".%s.\n", res[1]);
+		}
 	}
 }

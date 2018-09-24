@@ -16,6 +16,7 @@ void* memmove(void*, const void*, size_t);
 void* memset(void*, int, size_t);
 size_t strlen(const char*);
 bool strcmp(char *str_a, char *str_b);
+char **split(char *string, char separator);
 
 #ifdef __cplusplus
 }
