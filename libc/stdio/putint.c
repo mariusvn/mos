@@ -5,7 +5,6 @@ void putint(int n){
 	int num = n, rev = n, c = 0;
 	if(num == 0){
 		_pc('0');
-		_pc('\n');
 		return;
 	}
 	while(rev % 10 == 0){
@@ -24,5 +23,4 @@ void putint(int n){
 	while(c--){
 		_pc('0');
 	}
-	_pc('\n');
 }

@@ -61,10 +61,12 @@ static inline void outb(uint16_t port, uint8_t val){
 
 char keyboard_handler()
 {
+	static char last_charcode = 0;
     unsigned char scancode = 0;
 	outb(0x60, 0x0);
-	while (scancode == 0 || scancode == 250)
+	while (scancode == 0 || scancode == 250 || scancode == last_charcode)
     	scancode = inb(0x60);
+	last_charcode = scancode;
     if (scancode & 0x80)
     {
         switch (scancode) {

@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <kernel/tty.h>
 #include <drivers/cursor.h>
@@ -60,8 +61,10 @@ void terminal_putchar(char c) {
 	}
 	if (++terminal_column == VGA_WIDTH || uc == '\n') {
 		terminal_column = 0;
-		if (++terminal_row == VGA_HEIGHT)
+		if (++terminal_row == VGA_HEIGHT) {
+			terminal_row--;
 			terminal_scroll();
+		}
 	}
 }
 
@@ -76,4 +79,14 @@ void terminal_updatecursorpos() {
 
 void terminal_writestring(const char* data) {
 	terminal_write(data, strlen(data));
+}
+
+int *get_cursor_position()
+{
+	int *res = malloc((sizeof(int) * 2) + 1);
+
+	res[0] = terminal_column;
+	res[1] = terminal_row;
+	res[3] = '\0';
+	return res;
 }
