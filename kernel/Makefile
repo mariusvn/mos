@@ -19,8 +19,10 @@ LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
 ARCHDIR=arch/$(HOSTARCH)
+CMDSDIR=commands
 
 include $(ARCHDIR)/make.config
+include $(CMDSDIR)/make.config
 
 CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
@@ -29,7 +31,11 @@ LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 
 KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS) \
+$(KERNEL_COMMANDS) \
 kernel/kernel.o \
+kernel/command.o \
+kernel/modules.o \
+drivers/state.o
 
 OBJS=\
 $(ARCHDIR)/crti.o \
